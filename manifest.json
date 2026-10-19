@@ -7,10 +7,18 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#080a12",
-  "theme_color": "#080a12",
-  "categories": ["music", "entertainment"],
+  "background_color": "#090b17",
+  "theme_color": "#090b17",
+  "categories": [
+    "music",
+    "entertainment"
+  ],
   "icons": [
-    {"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }
