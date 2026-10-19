@@ -222,3 +222,13 @@ button:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,white
 .mood-card:active .mood-icon{transform:scale(.9);transition:transform .18s}
 @media(max-width:900px){.mood-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.mood-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mood-card{min-height:84px;padding:11px;border-radius:18px}.mood-card>b{font-size:24px}.mood-icon{font-size:20px}}
+
+/* PWA update prompt — compact iOS glass notification */
+.update-notice[hidden]{display:none}
+.update-notice{position:fixed;z-index:120;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(560px,calc(100vw - 24px));display:flex;align-items:center;gap:12px;padding:12px 13px 12px 16px;border:1px solid rgba(255,255,255,.85);border-radius:19px;background:rgba(255,255,255,.88);color:#262b40;box-shadow:0 16px 48px rgba(42,52,80,.2),inset 0 1px #fff;backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
+.update-notice>span{display:grid;gap:4px;min-width:0;flex:1}
+.update-notice strong{font-size:12px}
+.update-notice small{font-size:10px;color:#747d91}
+.update-notice button{border:1px solid rgba(255,255,255,.9);border-radius:12px;padding:9px 12px;background:linear-gradient(135deg,#bcb0ff,#8a7be7);color:white;font-size:11px;font-weight:800}
+.update-notice #dismissUpdate{padding:6px 9px;background:rgba(255,255,255,.6);color:#596176;font-size:17px}
+@media(max-width:420px){.update-notice{gap:7px;padding:10px}.update-notice button{padding:8px 9px}.update-notice small{font-size:9px}}
