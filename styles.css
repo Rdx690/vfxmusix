@@ -258,3 +258,39 @@ body{background:#101010;color:#f7f5fb}
  footer{margin-top:32px}
 }
 @media(max-width:360px){.mobile-brand{display:none}.searchbox{margin-left:0}.hero h1{font-size:39px}.player-controls{gap:8px}}
+
+
+/* Lyrics experience: full-height mobile sheet, album artwork and karaoke-style sync */
+.lyrics-panel.lyrics-experience{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;overflow:hidden;padding:22px max(18px,env(safe-area-inset-left)) 24px;background:radial-gradient(ellipse at 50% 0%,#38205e 0%,#17111f 42%,#0c0b10 100%);border:0;color:#f8f3ff}
+.lyrics-panel[hidden]{display:none!important}
+.lyrics-experience .lyrics-header{display:grid;grid-template-columns:100px minmax(0,1fr) auto;align-items:center;gap:16px;padding:10px 0 22px;border-bottom:1px solid #ffffff14}
+.lyrics-experience .lyrics-header>div:not(.lyrics-art){min-width:0}
+.lyrics-experience .lyrics-header small{color:#c3a3ff;letter-spacing:1.5px;font-size:10px}
+.lyrics-experience .lyrics-header h2{font-size:19px;line-height:1.2;margin:6px 0}
+.lyrics-experience .lyrics-header p{color:#b8aabd;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lyrics-experience #closeLyrics{border:1px solid #ffffff1a;background:#ffffff0c;color:#f7efff;border-radius:999px;padding:9px 13px}
+.lyrics-art{height:100px;width:100px;border-radius:12px;background:linear-gradient(135deg,#8650e8,#26163f);background-size:cover;background-position:center;display:grid;place-items:center;position:relative;overflow:hidden;box-shadow:0 12px 35px #0005}
+.lyrics-art.has-art .lyrics-vinyl{opacity:.15}
+.lyrics-vinyl{width:68px;height:68px;border-radius:50%;background:repeating-radial-gradient(circle,#18131f 0 2px,#342248 3px 4px);display:grid;place-items:center;animation:lyricsSpin 12s linear infinite;border:1px solid #ffffff25}
+.lyrics-vinyl span{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#ba8cff;color:#241335;font-size:7px;font-weight:900}
+.lyrics-equalizer{position:absolute;bottom:8px;left:0;right:0;display:flex;align-items:end;justify-content:center;gap:3px;height:15px}
+.lyrics-equalizer i{width:3px;height:5px;border-radius:3px;background:#e1caff;animation:lyricBars .75s ease-in-out infinite alternate}
+.lyrics-equalizer i:nth-child(2n){animation-delay:-.4s}.lyrics-equalizer i:nth-child(3n){animation-delay:-.2s}
+.lyrics-content{flex:1;overflow:auto;text-align:center;padding:26px 8px 35vh;scrollbar-width:none;mask-image:linear-gradient(transparent,#000 5%,#000 90%,transparent)}
+.lyric-line{font-size:clamp(20px,5vw,28px);line-height:1.4;font-weight:700;color:#81778f;opacity:.7;padding:11px 0;transition:color .25s,transform .25s,opacity .25s;text-wrap:balance}
+.lyric-line.active{color:#fff;opacity:1;transform:scale(1.035);text-shadow:0 0 22px #ad7aff77}
+.lyrics-empty,.lyrics-loading{min-height:35vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#d8c6ed}
+.lyrics-empty>span{font-size:42px;color:#bb91ff}.lyrics-empty small,.lyrics-loading small{color:#a99bb9;font-size:12px}
+.lyrics-pulse{width:44px;height:44px;border:3px solid #ffffff22;border-top-color:#c09aff;border-radius:50%;animation:lyricsSpin .8s linear infinite}
+.lyrics-experience .lyrics-credit{padding:12px 0;text-align:center;color:#877c95;font-size:10px}
+.now-playing .lyrics-btn{border:1px solid #ffffff17;background:#ffffff09;color:#d5b9ff;border-radius:999px;padding:7px 9px;font-size:10px;font-weight:700}
+@keyframes lyricsSpin{to{transform:rotate(360deg)}}@keyframes lyricBars{to{height:14px}}
+@media(max-width:760px){
+ .lyrics-experience{padding:calc(16px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom))!important}
+ .lyrics-experience .lyrics-header{grid-template-columns:76px minmax(0,1fr) auto;gap:11px;padding:8px 0 18px}
+ .lyrics-art{width:76px;height:76px}.lyrics-vinyl{width:52px;height:52px}
+ .lyrics-experience .lyrics-header h2{font-size:15px}.lyrics-experience .lyrics-header p{font-size:10px}
+ .lyrics-experience #closeLyrics{padding:8px 10px;font-size:11px}
+ .lyrics-content{padding:20px 4px 30vh}.lyric-line{font-size:22px;padding:13px 0}
+ .now-playing .lyrics-btn{padding:6px 8px;font-size:9px}
+}
