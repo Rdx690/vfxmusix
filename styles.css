@@ -147,3 +147,51 @@ body.is-playing .player{border-color:#c7bfff;box-shadow:0 14px 45px rgba(68,78,1
  .mobile-nav{background:rgba(255,255,255,.8)}
  .track-row:active{background:rgba(255,255,255,.92)}
 }
+
+/* Refined iOS liquid-glass buttons */
+button,.row-play,.icon-btn,.lyrics-btn,.heart-btn,.text-btn,.install-app-btn{
+ -webkit-tap-highlight-color:transparent;
+}
+.primary-btn,.play-btn,.row-play,.lyrics-btn,.install-app-btn,.top-arrows button,.theme-picker,.nav-item,.mobile-nav button,.icon-btn,.heart-btn,.text-btn,.lyrics-header>button{
+ position:relative;isolation:isolate;overflow:hidden;
+ transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .22s,background .22s,border-color .22s,color .22s;
+}
+.primary-btn:before,.play-btn:before,.row-play:before,.lyrics-btn:before,.install-app-btn:before,.mobile-nav button:before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background:linear-gradient(115deg,rgba(255,255,255,.48),rgba(255,255,255,0) 44%,rgba(255,255,255,.2));
+ opacity:.6;transition:opacity .2s;
+}
+.primary-btn{border:1px solid rgba(255,255,255,.7);box-shadow:0 8px 24px color-mix(in srgb,var(--accent) 23%,transparent),inset 0 1px rgba(255,255,255,.65)}
+.primary-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px color-mix(in srgb,var(--accent) 28%,transparent),inset 0 1px #ffffffb0}
+.primary-btn:active,.play-btn:active,.row-play:active,.lyrics-btn:active,.install-app-btn:active,.top-arrows button:active,.nav-item:active,.mobile-nav button:active,.icon-btn:active,.heart-btn:active,.lyrics-header>button:active{
+ transform:scale(.94)!important;
+}
+.play-btn{border:1px solid rgba(255,255,255,.75)!important;box-shadow:0 5px 16px color-mix(in srgb,var(--accent) 25%,transparent),inset 0 1px rgba(255,255,255,.55)}
+.play-btn:hover{box-shadow:0 7px 22px color-mix(in srgb,var(--accent) 34%,transparent)}
+.row-play,.lyrics-btn,.install-app-btn{
+ border:1px solid rgba(255,255,255,.86);
+ background:rgba(255,255,255,.55);
+ box-shadow:inset 0 1px #ffffffcc,0 4px 13px rgba(70,80,120,.07);
+ backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.row-play:hover,.lyrics-btn:hover,.install-app-btn:hover{background:rgba(255,255,255,.9);border-color:#fff;box-shadow:0 6px 18px rgba(70,80,120,.12)}
+.icon-btn{border-radius:11px}
+.icon-btn:hover{background:rgba(255,255,255,.72);border-color:rgba(255,255,255,.85);color:var(--accent)}
+.icon-btn.liked,.heart-btn.liked{color:#f0649a}
+.heart-btn{border-radius:50%;min-width:34px;min-height:34px}
+.heart-btn:hover{background:rgba(255,255,255,.72)}
+.nav-item,.mobile-nav button{border:1px solid transparent}
+.nav-item.active,.mobile-nav button.active{box-shadow:inset 0 1px #fff,0 5px 15px rgba(70,80,120,.08)}
+.mobile-nav button:before{border-radius:inherit}
+.top-arrows button:hover{background:rgba(255,255,255,.88);box-shadow:0 5px 14px rgba(70,80,120,.09)}
+.theme-picker{box-shadow:inset 0 1px #fff,0 4px 14px rgba(70,80,120,.05)}
+.mood-card:active,.artist-card:active{transform:scale(.975);box-shadow:inset 0 1px #fff,0 0 0 3px color-mix(in srgb,var(--accent) 13%,transparent)}
+button:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,white);outline-offset:3px}
+@media(max-width:680px){
+ .primary-btn{min-height:42px}
+ .row-play{min-height:32px;padding:7px 9px}
+ .lyrics-btn{min-height:30px}
+ .mobile-nav button{min-height:48px}
+ .player-controls .play-btn{min-width:35px;min-height:35px}
+}
+@media(prefers-reduced-motion:reduce){button,.row-play,.icon-btn,.lyrics-btn,.heart-btn,.text-btn,.install-app-btn{transition:none!important}}
