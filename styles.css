@@ -195,3 +195,21 @@ button:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,white
  .player-controls .play-btn{min-width:35px;min-height:35px}
 }
 @media(prefers-reduced-motion:reduce){button,.row-play,.icon-btn,.lyrics-btn,.heart-btn,.text-btn,.install-app-btn{transition:none!important}}
+
+/* Fix music control glyph wrapping / split symbols */
+.player-controls{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:clamp(7px,1.2vw,13px);min-width:0}
+.player-controls button,.player-controls .play-btn{
+ flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;
+ white-space:nowrap;word-break:keep-all;overflow:hidden;line-height:1;
+ font-family:Arial,"Noto Sans Symbols 2",sans-serif;
+}
+.player-controls button:not(.play-btn){width:32px;min-width:32px;height:32px;padding:0;font-size:17px;letter-spacing:0}
+.player-controls .play-btn{width:42px;min-width:42px;height:42px;padding:0;font-size:17px}
+#prevBtn,#nextBtn{font-size:20px!important}
+#shuffleBtn,#repeatBtn{font-size:19px!important}
+@media(max-width:680px){
+ .player-controls{gap:clamp(4px,1.7vw,9px)}
+ .player-controls button:not(.play-btn){width:29px;min-width:29px;height:30px;font-size:16px}
+ .player-controls .play-btn{width:36px;min-width:36px;height:36px;font-size:15px}
+ #prevBtn,#nextBtn{font-size:19px!important}
+}
