@@ -51,3 +51,99 @@ body.is-playing #playerCover{animation:cover-breathe 2.8s ease-in-out infinite;b
 .mobile-brand{display:flex;align-items:center;gap:7px}
 .mobile-brand img{width:27px;height:27px;object-fit:cover;border-radius:9px;border:1px solid var(--line);box-shadow:0 3px 12px #8d80ff2b}
 @media(max-width:680px){.mobile-brand img{width:28px;height:28px}}
+
+/* VFX MUSIC VAULT — iOS 26-inspired luminous liquid-glass redesign */
+:root{
+ color-scheme:light;
+ --bg:#edf1f7;--panel:rgba(255,255,255,.55);--panel2:rgba(255,255,255,.78);
+ --line:rgba(255,255,255,.8);--text:#202638;--muted:#707b90;
+ --accent:#7867d9;--accent2:#48bcb9;--shadow:0 20px 55px rgba(69,81,117,.13);
+}
+body{
+ color-scheme:light;
+ background:
+  radial-gradient(ellipse at 7% 0%,rgba(197,189,255,.82),transparent 32rem),
+  radial-gradient(ellipse at 95% 18%,rgba(179,235,234,.75),transparent 31rem),
+  radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.85),transparent 38rem),
+  #edf1f7;
+ color:var(--text);
+}
+.ambient{opacity:.11;filter:blur(105px)}
+.ambient-a{background:#b9a8ff}.ambient-b{background:#88dfd7}
+.sidebar{
+ background:rgba(255,255,255,.48);border-right:1px solid rgba(255,255,255,.8);
+ box-shadow:inset -1px 0 rgba(255,255,255,.35);
+}
+.brand-mark{border-color:#ffffffb8;box-shadow:0 7px 22px #8d80ff25}
+.nav-item{color:#69748a}
+.nav-item.active,.nav-item:hover{background:rgba(255,255,255,.76);border-color:#ffffffd9;color:#292a46;box-shadow:0 5px 18px #53658b0c}
+.sidebar-bottom,.searchbox,.theme-picker,.install-app-btn,.top-arrows button{
+ background:rgba(255,255,255,.55);border-color:rgba(255,255,255,.85);
+ box-shadow:inset 0 1px rgba(255,255,255,.9),0 5px 18px rgba(74,88,119,.045);
+}
+.searchbox input{color:#242a3d}.searchbox input::placeholder{color:#8992a5}
+.theme-picker select{color:#353c52}
+.avatar{border-color:#ffffff;background:linear-gradient(145deg,#fff,#d9d5ff);box-shadow:0 5px 18px #7172b21c}
+.hero{
+ border:1px solid rgba(255,255,255,.9);
+ background:linear-gradient(125deg,rgba(255,255,255,.72),rgba(255,255,255,.28));
+ box-shadow:0 24px 65px rgba(77,85,128,.12),inset 0 1px rgba(255,255,255,.95);
+}
+.hero:before{background:radial-gradient(circle at 84% 48%,rgba(150,135,240,.2),transparent 33%),linear-gradient(125deg,rgba(255,255,255,.24),transparent 60%)}
+.hero h1{color:#25283a}.hero-copy p{color:#68738a}
+.hero .eyebrow{color:#7160c9}.live-dot{box-shadow:0 0 12px #56cfc4;background:#56cfc4}
+.hero-disc{box-shadow:0 0 55px #a79bff37,0 25px 45px #66749b20;border-color:#ffffffb0}
+.disc-core{background:linear-gradient(145deg,#fff,#d9d5f9);color:#38344f;border-color:#ffffff}
+.floating-tag{background:rgba(255,255,255,.72);border-color:#ffffff;color:#4c5268;box-shadow:0 8px 24px #5e6b8b15}
+.orbit{border-color:#8f82db3d}
+.primary-btn{background:linear-gradient(135deg,#bcb0ff,#8a7be7);color:#fff;box-shadow:0 9px 25px #9285dc3a}
+.section-heading h2{color:#272b3d}
+.eyebrow{color:#7b70bd}
+.text-btn{color:#6d5bc8}
+.mood-card,.artist-card{
+ background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.39));
+ border-color:rgba(255,255,255,.92);
+ box-shadow:inset 0 1px rgba(255,255,255,.95),0 9px 25px rgba(76,89,121,.055);
+}
+.mood-card:hover,.artist-card:hover{background:rgba(255,255,255,.9);box-shadow:0 12px 28px rgba(76,89,121,.1)}
+.mood-card small,.artist-card small{color:#7c8497}
+.mood-icon{background:color-mix(in srgb,var(--mood,var(--accent)) 14%,white)}
+.track-row:hover,.track-row.playing{background:rgba(255,255,255,.68);border-color:#ffffff}
+.track-row.playing{box-shadow:inset 3px 0 var(--accent),0 5px 20px #7380a00d}
+.track-info strong{color:#252a3c}
+.track-info small,.track-genre,.track-duration,.track-index{color:#81899c}
+.track-cover,.cover{box-shadow:0 7px 18px #56617a20}
+.row-play{background:rgba(255,255,255,.65);border-color:#ffffff;color:#48475f}
+.row-play:hover{background:#fff}
+footer{border-color:#ffffffb8;color:#858ca0}
+.mobile-nav{
+ background:rgba(255,255,255,.72);border-color:rgba(255,255,255,.95);
+ box-shadow:0 14px 40px rgba(71,82,115,.15),inset 0 1px #fff;
+}
+.mobile-nav button{color:#788197}
+.mobile-nav button.active{background:rgba(255,255,255,.9);border-color:#fff;color:#6957c7;box-shadow:0 4px 13px #68729a12}
+.player{
+ background:rgba(255,255,255,.76);border-color:rgba(255,255,255,.95);
+ box-shadow:0 14px 45px rgba(68,78,112,.17),inset 0 1px #fff;
+}
+body.is-playing .player{border-color:#c7bfff;box-shadow:0 14px 45px rgba(68,78,112,.17),0 0 25px #a99cff2b}
+.player-controls button{color:#777f92}
+.player-controls .play-btn{background:linear-gradient(145deg,#8e7be8,#6f5bc9);color:white;box-shadow:0 5px 16px #8d7ce13d}
+.lyrics-btn{background:rgba(255,255,255,.7);border-color:#fff;color:#595a70}
+.heart-btn{color:#6e7185}
+.progress-row span{color:#7e8799}
+.progress-row input{accent-color:#7d6cda}
+.toast{background:rgba(255,255,255,.9);border-color:#fff;color:#34384c;box-shadow:0 14px 35px #67728b25;backdrop-filter:blur(24px)}
+.lyrics-panel{background:radial-gradient(ellipse at 50% 0%,#e1dcff 0%,#f2f4fa 52%,#e8eff4 100%);color:#292d41}
+.lyrics-header p,.lyrics-credit{color:#727b90}
+.lyrics-content{color:#6d7488}
+.lyric-line.active{color:#24283b;text-shadow:0 0 22px #9d8dfb52}
+.lyrics-header>button{background:rgba(255,255,255,.7);border-color:#fff;color:#42465b}
+@media(max-width:680px){
+ .main-content{padding-top:10px}
+ .topbar{padding-top:8px;padding-bottom:12px}
+ .hero{box-shadow:0 18px 42px #6e7da015,inset 0 1px #fff}
+ .player{background:rgba(255,255,255,.82)}
+ .mobile-nav{background:rgba(255,255,255,.8)}
+ .track-row:active{background:rgba(255,255,255,.92)}
+}
