@@ -44,3 +44,10 @@ body.is-playing #playerCover{animation:cover-breathe 2.8s ease-in-out infinite;b
  .track-row{transition:background .18s,border-color .18s,transform .18s}
 }
 @media(prefers-reduced-motion:reduce){body.is-playing #playerCover{animation:none}}
+
+/* Unified VFX brand icon in web and installed-app headers */
+.brand-mark{overflow:hidden;padding:0;background:transparent;border:1px solid rgba(255,255,255,.24);box-shadow:0 5px 25px #7d8cff28}
+.brand-mark img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.mobile-brand{display:flex;align-items:center;gap:7px}
+.mobile-brand img{width:27px;height:27px;object-fit:cover;border-radius:9px;border:1px solid var(--line);box-shadow:0 3px 12px #8d80ff2b}
+@media(max-width:680px){.mobile-brand img{width:28px;height:28px}}
