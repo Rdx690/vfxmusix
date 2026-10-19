@@ -126,4 +126,18 @@ $("#lyricsBtn")?.addEventListener("click",async()=>{
 });
 
 const themeSelect=$("#themeSelect");function setTheme(name){const allowed=["neon","light","studio","cyberpunk","glass","amoled","sunset"];const theme=allowed.includes(name)?name:"neon";document.body.dataset.theme=theme;if(themeSelect)themeSelect.value=theme;try{localStorage.setItem("vfx-theme",theme)}catch{}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==="light"?"#f3f5fb":theme==="amoled"?"#000000":theme==="cyberpunk"?"#050810":theme==="sunset"?"#160d1b":"#080a12"}if(themeSelect){let savedTheme="neon";try{savedTheme=localStorage.getItem("vfx-theme")||"neon"}catch{}setTheme(savedTheme);themeSelect.addEventListener("change",e=>{setTheme(e.target.value);toast("Theme changed · "+e.target.options[e.target.selectedIndex].text)})}else setTheme("neon");$("#backBtn").addEventListener("click",()=>window.history.back());$("#forwardBtn").addEventListener("click",()=>window.history.forward());$("#year").textContent=new Date().getFullYear();render();searchRemote(["Arijit Singh romantic hits","Anupam Roy Bengali songs","trending Hindi songs","Bengali hit songs"][Math.floor(Math.random()*4)],{title:"Your Daily Mix",silent:true});
+
+/* Tactile feedback helpers and playback state */
+document.body.addEventListener("pointerdown",e=>{
+ const target=e.target.closest("button,.track-row,.artist-card,.mood-card");
+ if(target&&!target.disabled)target.classList.add("touch-pressed");
+},{passive:true});
+["pointerup","pointercancel","pointerleave"].forEach(type=>document.body.addEventListener(type,e=>{
+ const target=e.target.closest?.(".touch-pressed");
+ if(target)target.classList.remove("touch-pressed");
+},{passive:true}));
+audio.addEventListener("play",()=>document.body.classList.add("is-playing"));
+audio.addEventListener("pause",()=>document.body.classList.remove("is-playing"));
+audio.addEventListener("ended",()=>document.body.classList.remove("is-playing"));
+
 })();
