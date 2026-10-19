@@ -61,7 +61,31 @@ document.querySelectorAll("[data-artist]").forEach(b=>b.addEventListener("click"
 let installPrompt=null;
 const installButton=$("#installAppBtn");
 function showInstallButton(){if(installButton)installButton.hidden=false}
-if("serviceWorker" in navigator && location.protocol!=="file:"){window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}))}
+/* Automatic PWA updates: detect new service worker and offer a safe refresh */
+if("serviceWorker" in navigator && location.protocol!=="file:"){
+ let refreshing=false;
+ const notice=$("#updateNotice"),apply=$("#applyUpdate"),dismiss=$("#dismissUpdate");
+ const showUpdate=()=>{if(notice)notice.hidden=false};
+ navigator.serviceWorker.addEventListener("controllerchange",()=>{if(refreshing)return;refreshing=true;window.location.reload()});
+ window.addEventListener("load",async()=>{
+  try{
+   const registration=await navigator.serviceWorker.register("/sw.js");
+   if(registration.waiting&&navigator.serviceWorker.controller)showUpdate();
+   registration.addEventListener("updatefound",()=>{
+    const worker=registration.installing;if(!worker)return;
+    worker.addEventListener("statechange",()=>{
+     if(worker.state==="installed"&&navigator.serviceWorker.controller)showUpdate();
+    });
+   });
+   if(apply)apply.addEventListener("click",()=>{
+    if(registration.waiting){registration.waiting.postMessage({type:"SKIP_WAITING"});apply.textContent="Updating…";apply.disabled=true}
+    else registration.update().then(()=>{if(registration.waiting)registration.waiting.postMessage({type:"SKIP_WAITING"});else{showUpdate();if(apply){apply.textContent="Refresh now";apply.disabled=false;apply.onclick=()=>window.location.reload()}}}).catch(()=>window.location.reload());
+   });
+   if(dismiss)dismiss.addEventListener("click",()=>{notice.hidden=true});
+   setInterval(()=>registration.update().catch(()=>{}),5*60*1000);
+  }catch(e){}
+ });
+}
 window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();installPrompt=event;showInstallButton()});
 window.addEventListener("appinstalled",()=>{installPrompt=null;if(installButton)installButton.hidden=true;toast("VFX MUSIC VAULT installed!")});
 if(installButton){
