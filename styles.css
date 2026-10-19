@@ -213,3 +213,12 @@ button:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,white
  .player-controls .play-btn{width:36px;min-width:36px;height:36px;font-size:15px}
  #prevBtn,#nextBtn{font-size:19px!important}
 }
+
+/* Mood discovery cards and robust, readable icon glyphs */
+.mood-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mood-card{min-height:112px;padding:17px;border-radius:23px}
+.mood-icon{font-family:Arial,"Noto Sans Symbols 2",sans-serif;font-size:23px;font-weight:600}
+.mood-card>b{font-family:Arial,sans-serif;font-size:27px;font-weight:400;line-height:1}
+.mood-card:active .mood-icon{transform:scale(.9);transition:transform .18s}
+@media(max-width:900px){.mood-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.mood-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mood-card{min-height:84px;padding:11px;border-radius:18px}.mood-card>b{font-size:24px}.mood-icon{font-size:20px}}
