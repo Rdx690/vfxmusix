@@ -232,3 +232,7 @@ button:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,white
 .update-notice button{border:1px solid rgba(255,255,255,.9);border-radius:12px;padding:9px 12px;background:linear-gradient(135deg,#bcb0ff,#8a7be7);color:white;font-size:11px;font-weight:800}
 .update-notice #dismissUpdate{padding:6px 9px;background:rgba(255,255,255,.6);color:#596176;font-size:17px}
 @media(max-width:420px){.update-notice{gap:7px;padding:10px}.update-notice button{padding:8px 9px}.update-notice small{font-size:9px}}
+
+.update-notice{gap:10px}
+.update-notice #applyUpdate{white-space:nowrap}
+.update-notice #applyUpdate:disabled{opacity:.65}
