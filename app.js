@@ -48,9 +48,9 @@ mixSection.className="section-block";
 mixSection.innerHTML='<div class="section-heading"><div><div class="eyebrow">AUTO-CURATED FOR YOU</div><h2>Made for your <em>mood</em></h2></div></div><div class="mood-grid" id="autoMixGrid"><button class="mood-card mood-blue" data-query="Assamese hit songs" data-title="Assamese Hits"><span class="mood-icon">অসম</span><span><strong>Assamese Hits</strong><small>Axomiya favourites</small></span><b>▶</b></button><button class="mood-card mood-pink" data-query="Hindi sad songs" data-title="Sad Songs"><span class="mood-icon">☾</span><span><strong>Sad Songs</strong><small>Late-night feelings</small></span><b>▶</b></button><button class="mood-card mood-violet" data-query="Hindi romantic love songs" data-title="Love Mix"><span class="mood-icon">♥</span><span><strong>Love Mix</strong><small>Romantic favourites</small></span><b>▶</b></button><button class="mood-card mood-orange" data-query="Arijit Singh romantic hits" data-title="Arijit Singh Mix"><span class="mood-icon">♫</span><span><strong>Arijit Mix</strong><small>Heart-touching hits</small></span><b>▶</b></button></div>';
 const artistSection=document.querySelector(".artist-section");
 if(artistSection){
-  const artists=[["Arijit Singh","A"],["Shreya Ghoshal","S"],["Sonu Nigam","S"],["Jubin Nautiyal","J"],["Neha Kakkar","N"],["Papon","P"],["Zubeen Garg","Z"]];
+  const artists=[["Arijit Singh","A"],["Shreya Ghoshal","S"],["Sonu Nigam","S"],["Jubin Nautiyal","J"],["Neha Kakkar","N"],["Papon","P"],["Zubeen Garg","Z"],["Anupam Roy","A"],["Armaan Malik","A"],["Atif Aslam","A"],["Rupam Bhuyan","R"],["Prateek Kuhad","P"],["Monali Thakur","M"],["B Praak","B"],["Darshan Raval","D"],["KK","K"],["Kumar Sanu","K"],["Lata Mangeshkar","L"],["Kishore Kumar","K"],["Himesh Reshammiya","H"],["Shreya Ghoshal Bengali","S"],["Nachiketa Chakraborty","N"],["Anupam Roy Bengali","A"],["Iman Chakraborty","I"],["Rupankar Bagchi","R"],["Arijit Singh Bengali","A"],["Manna Dey","M"],["Hemanta Mukherjee","H"],["Jeet Gannguli","J"],["Shaan","S"],["Asha Bhosle","A"]];
   artistSection.querySelector(".artist-grid").innerHTML=artists.map((a,i)=>'<button class="artist-card artist-'+["one","two","three","four"][i%4]+'" data-artist="'+esc(a[0])+'" style="cursor:pointer;color:inherit;text-align:left"><div class="artist-portrait">'+a[1]+'</div><strong>'+a[0]+'</strong><small>Tap to play their songs</small></button>').join("");
-  const heading=artistSection.querySelector(".section-heading h2"); if(heading) heading.innerHTML='Top <em>singers</em>';
+  const heading=artistSection.querySelector(".section-heading h2"); if(heading) heading.innerHTML='Artists you <em>love</em>';
   const parent=artistSection.parentNode; parent.insertBefore(mixSection,artistSection);
 }
 document.querySelectorAll("#autoMixGrid [data-query]").forEach(b=>b.addEventListener("click",()=>{query="";$("#searchInput").value="";searchRemote(b.dataset.query,{title:b.dataset.title});$("#tracksSection").scrollIntoView({behavior:"smooth",block:"start"})}));
@@ -75,18 +75,54 @@ if(installButton){
 }
 
 
-/* Song lyrics panel */
+/* Full-screen animated lyrics experience with timed line highlighting */
+let lyricsData=[],lyricsTimers=[];
 const lyricsPanel=$("#lyricsPanel"),lyricsContent=$("#lyricsContent");
-function closeLyrics(){if(lyricsPanel)lyricsPanel.hidden=true}
+function closeLyrics(){if(lyricsPanel)lyricsPanel.hidden=true;lyricsTimers.forEach(clearTimeout);lyricsTimers=[]}
 $("#closeLyrics")?.addEventListener("click",closeLyrics);
+function makeLyricsPanel(){
+ if(!lyricsPanel)return;
+ lyricsPanel.classList.add("lyrics-experience");
+ const head=lyricsPanel.querySelector(".lyrics-header");
+ if(head){const art=document.createElement("div");art.className="lyrics-art";art.id="lyricsArt";art.innerHTML='<div class="lyrics-vinyl"><span>VFX</span></div><div class="lyrics-equalizer"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';head.prepend(art)}
+ const credit=lyricsPanel.querySelector(".lyrics-credit");if(credit)credit.textContent="Lyrics are shown when available from the lyrics provider.";
+}
+makeLyricsPanel();
+function parseTimedLyrics(raw){
+ const out=[];String(raw||"").split("\n").forEach(line=>{
+  const matches=[...line.matchAll(/\[(\d{1,2}):(\d{2})(?:[.:](\d{1,3}))?\]/g)];
+  const text=line.replace(/\[[^\]]+\]/g,"").trim();if(!text)return;
+  if(matches.length)matches.forEach(m=>out.push({time:Number(m[1])*60+Number(m[2])+Number("0."+(m[3]||"0")),text}));
+  else out.push({time:null,text});
+ });return out.sort((a,b)=>(a.time??1e9)-(b.time??1e9));
+}
+function renderLyrics(){
+ if(!lyricsContent)return;
+ if(!lyricsData.length){lyricsContent.innerHTML='<div class="lyrics-empty"><span>♪</span><strong>Lyrics not available</strong><small>Try another track or check back later.</small></div>';return}
+ lyricsContent.innerHTML=lyricsData.map((l,i)=>'<p class="lyric-line" data-lyric="'+i+'">'+esc(l.text)+'</p>').join("");
+ syncLyrics();
+}
+function syncLyrics(){
+ if(!lyricsPanel||lyricsPanel.hidden||!lyricsData.length)return;
+ const now=audio.currentTime||0;let active=-1;
+ lyricsData.forEach((l,i)=>{if(l.time!==null&&l.time<=now)active=i});
+ if(active<0)return;
+ lyricsContent.querySelectorAll(".lyric-line").forEach((el,i)=>el.classList.toggle("active",i===active));
+ const el=lyricsContent.querySelector('[data-lyric="'+active+'"]');if(el)el.scrollIntoView({block:"center",behavior:"smooth"});
+}
+audio.addEventListener("timeupdate",syncLyrics);
 $("#lyricsBtn")?.addEventListener("click",async()=>{
  const t=tracks[current];if(!t){toast("Play a song first to find its lyrics.");return}
- lyricsPanel.hidden=false;$("#lyricsTitle").textContent=t.title||"Lyrics";$("#lyricsArtist").textContent=t.artist||"Unknown artist";lyricsContent.textContent="Searching lyrics…";
- try{const d=await api("/api/lyrics?title="+encodeURIComponent(t.title||"")+"&artist="+encodeURIComponent(t.artist||"")+"&duration="+encodeURIComponent(t.duration||audio.duration||0));
-  if(d.syncedLyrics){lyricsContent.innerHTML="";const lines=d.syncedLyrics.split("\n").map(line=>line.replace(/^\[[^\]]+\]\s*/,"").trim()).filter(Boolean);lines.forEach(line=>{const p=document.createElement("p");p.textContent=line;lyricsContent.appendChild(p)})}
-  else if(d.lyrics){lyricsContent.textContent=d.lyrics}
-  else lyricsContent.textContent="Lyrics are not available for this track yet.";
- }catch(e){lyricsContent.textContent="Could not load lyrics right now. Please try again later."}
+ lyricsPanel.hidden=false;$("#lyricsTitle").textContent=t.title||"Lyrics";$("#lyricsArtist").textContent=t.artist||"Unknown artist";
+ const art=$("#lyricsArt");if(art){art.style.backgroundImage=t.image?'url("'+String(t.image).replace(/["\\]/g,"")+'")':"none";art.classList.toggle("has-art",!!t.image)}
+ lyricsContent.innerHTML='<div class="lyrics-loading"><div class="lyrics-pulse"></div><strong>Finding your lyrics</strong><small>Getting the words in sync…</small></div>';
+ try{
+  const d=await api("/api/lyrics?title="+encodeURIComponent(t.title||"")+"&artist="+encodeURIComponent(t.artist||"")+"&duration="+encodeURIComponent(t.duration||audio.duration||0));
+  const raw=d.syncedLyrics||d.lyrics||"";
+  lyricsData=parseTimedLyrics(raw);
+  if(!lyricsData.length&&raw)lyricsData=raw.split("\n").map(text=>({time:null,text:text.trim()})).filter(x=>x.text);
+  renderLyrics();
+ }catch(e){lyricsData=[];lyricsContent.innerHTML='<div class="lyrics-empty"><span>♪</span><strong>Could not load lyrics</strong><small>Please try again in a moment.</small></div>'}
 });
 
 const themeSelect=$("#themeSelect");function setTheme(name){const allowed=["neon","light","studio","cyberpunk","glass","amoled","sunset"];const theme=allowed.includes(name)?name:"neon";document.body.dataset.theme=theme;if(themeSelect)themeSelect.value=theme;try{localStorage.setItem("vfx-theme",theme)}catch{}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==="light"?"#f3f5fb":theme==="amoled"?"#000000":theme==="cyberpunk"?"#050810":theme==="sunset"?"#160d1b":"#080a12"}if(themeSelect){let savedTheme="neon";try{savedTheme=localStorage.getItem("vfx-theme")||"neon"}catch{}setTheme(savedTheme);themeSelect.addEventListener("change",e=>{setTheme(e.target.value);toast("Theme changed · "+e.target.options[e.target.selectedIndex].text)})}else setTheme("neon");$("#backBtn").addEventListener("click",()=>window.history.back());$("#forwardBtn").addEventListener("click",()=>window.history.forward());$("#year").textContent=new Date().getFullYear();render();searchRemote(["Arijit Singh romantic hits","Shreya Ghoshal hits","trending Hindi songs","Assamese hit songs"][Math.floor(Math.random()*4)],{title:"Your Daily Mix",silent:true});
