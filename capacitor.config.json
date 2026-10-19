@@ -1,0 +1,8 @@
+{
+  "appId": "com.sourajitvfx.musicvault",
+  "appName": "VFX MUSIC VAULT",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
