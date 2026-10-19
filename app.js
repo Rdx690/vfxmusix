@@ -61,10 +61,11 @@ document.querySelectorAll("[data-artist]").forEach(b=>b.addEventListener("click"
 let installPrompt=null;
 const installButton=$("#installAppBtn");
 function showInstallButton(){if(installButton)installButton.hidden=false}
-/* Automatic PWA updates: detect new service worker and offer a safe refresh */
+/* Website cache updates + GitHub release-based APK update notifications */
 if("serviceWorker" in navigator && location.protocol!=="file:"){
  let refreshing=false;
  const notice=$("#updateNotice"),apply=$("#applyUpdate"),dismiss=$("#dismissUpdate");
+ const title=$("#updateTitle"),details=$("#updateDetails");
  const showUpdate=()=>{if(notice)notice.hidden=false};
  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(refreshing)return;refreshing=true;window.location.reload()});
  window.addEventListener("load",async()=>{
@@ -73,18 +74,30 @@ if("serviceWorker" in navigator && location.protocol!=="file:"){
    if(registration.waiting&&navigator.serviceWorker.controller)showUpdate();
    registration.addEventListener("updatefound",()=>{
     const worker=registration.installing;if(!worker)return;
-    worker.addEventListener("statechange",()=>{
-     if(worker.state==="installed"&&navigator.serviceWorker.controller)showUpdate();
-    });
-   });
-   if(apply)apply.addEventListener("click",()=>{
-    if(registration.waiting){registration.waiting.postMessage({type:"SKIP_WAITING"});apply.textContent="Updating…";apply.disabled=true}
-    else registration.update().then(()=>{if(registration.waiting)registration.waiting.postMessage({type:"SKIP_WAITING"});else{showUpdate();if(apply){apply.textContent="Refresh now";apply.disabled=false;apply.onclick=()=>window.location.reload()}}}).catch(()=>window.location.reload());
+    worker.addEventListener("statechange",()=>{if(worker.state==="installed"&&navigator.serviceWorker.controller){if(title)title.textContent="Website update ready";if(details)details.textContent="Refresh to load the latest website.";if(apply)apply.textContent="Refresh";showUpdate()}});
    });
    if(dismiss)dismiss.addEventListener("click",()=>{notice.hidden=true});
    setInterval(()=>registration.update().catch(()=>{}),5*60*1000);
   }catch(e){}
  });
+ const checkApkUpdate=async()=>{
+  try{
+   const response=await fetch("https://api.github.com/repos/Rdx690/vfxmusix/releases/latest",{headers:{Accept:"application/vnd.github+json"},cache:"no-store"});
+   if(!response.ok)return;
+   const release=await response.json();
+   const apk=(release.assets||[]).find(asset=>/\.apk$/i.test(asset.name));
+   if(!apk)return;
+   let installed="0";
+   try{installed=localStorage.getItem("vfx-apk-release")||"0"}catch(e){}
+   if(release.tag_name===installed)return;
+   if(title)title.textContent="VFX MUSIC VAULT update available";
+   if(details)details.textContent=(release.name||release.tag_name)+" · APK ready to download";
+   if(apply){apply.textContent="Download APK";apply.onclick=()=>{try{localStorage.setItem("vfx-apk-release",release.tag_name)}catch(e){}window.open(apk.browser_download_url,"_blank","noopener")}}
+   showUpdate();
+  }catch(e){}
+ };
+ checkApkUpdate();
+ setInterval(checkApkUpdate,6*60*60*1000);
 }
 window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();installPrompt=event;showInstallButton()});
 window.addEventListener("appinstalled",()=>{installPrompt=null;if(installButton)installButton.hidden=true;toast("VFX MUSIC VAULT installed!")});
