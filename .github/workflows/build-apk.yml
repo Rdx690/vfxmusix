@@ -50,3 +50,11 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+      - name: Publish APK release for in-app update notifications
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-v1.2.0-${{ github.run_number }}
+          name: VFX MUSIC VAULT APK build ${{ github.run_number }}
+          body: "Android APK generated automatically by GitHub Actions. Download the APK asset below and install it on your Android device."
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          make_latest: true
