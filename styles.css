@@ -236,3 +236,10 @@ button:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,white
 .update-notice{gap:10px}
 .update-notice #applyUpdate{white-space:nowrap}
 .update-notice #applyUpdate:disabled{opacity:.65}
+
+/* Keep real album artwork visible in the now-playing player */
+.small-cover{position:relative;overflow:hidden;flex-shrink:0;background:var(--cover,linear-gradient(135deg,#9b74ff,#18203b));background-size:cover;background-position:center}
+.player-art{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:cover;border-radius:inherit}
+.now-playing .small-cover:has(.player-art){background-image:none!important}
+.track-cover.has-art{background-size:cover;background-position:center}
+.track-cover img{display:block;width:100%;height:100%;object-fit:cover}
