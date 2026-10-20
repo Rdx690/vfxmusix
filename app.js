@@ -56,18 +56,18 @@ $("#fullProgress")?.addEventListener("input",e=>{if(Number.isFinite(audio.durati
 audio.addEventListener("timeupdate",()=>{const p=$("#fullProgress");if(p&&Number.isFinite(audio.duration))p.value=audio.currentTime/audio.duration*100;const c=$("#fullCurrentTime"),d=$("#fullDuration");if(c)c.textContent=tm(audio.currentTime);if(d)d.textContent=tm(audio.duration)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&fullPlayer&&!fullPlayer.hidden)closeFullPlayer()});
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&fullPlayer&&!fullPlayer.hidden){fullPlayer.hidden=true;document.body.classList.remove("full-player-open")}});
-/* Restore last track after refresh; browsers may require a tap to resume audio. */
-try{
- const saved=JSON.parse(localStorage.getItem("vfx-playback")||"null");
- if(saved&&saved.track&&saved.track.url){
-   const restored={...saved.track,id:String(saved.track.id),demo:false};
-   tracks=[restored,...tracks.filter(t=>String(t.id)!==String(restored.id))];current=0;
-   audio.src=restored.url;audio.volume=Number.isFinite(saved.volume)?saved.volume:.7;
-   audio.addEventListener("loadedmetadata",()=>{if(Number.isFinite(audio.duration)&&saved.time>0)audio.currentTime=Math.min(saved.time,Math.max(0,audio.duration-1))},{once:true});
-   update();
-   if(saved.wasPlaying){audio.play().catch(()=>toast("Last song restored. Tap Play to resume after refresh."))}
- }
-}catch{}
+function restorePlayback(){
+ try{
+  const saved=JSON.parse(localStorage.getItem("vfx-playback")||"null");
+  if(!saved||!saved.track||!saved.track.url)return;
+  const restored={...saved.track,id:String(saved.track.id),demo:false};
+  tracks=[restored,...tracks.filter(t=>String(t.id)!==String(restored.id))];current=0;
+  audio.src=restored.url;audio.volume=Number.isFinite(saved.volume)?saved.volume:.7;
+  audio.addEventListener("loadedmetadata",()=>{if(Number.isFinite(audio.duration)&&saved.time>0)audio.currentTime=Math.min(saved.time,Math.max(0,audio.duration-1))},{once:true});
+  update();
+  if(saved.wasPlaying)audio.play().catch(()=>toast("Last song restored. Tap Play to resume after refresh."));
+ }catch{}
+}
 
 $("#searchInput").addEventListener("input",e=>{query=e.target.value.trim();document.body.classList.toggle("search-active",query.length>=1);mood="";remotePlaylist=null;clearTimeout(searchTimer);if(query.length>=2){listEl.innerHTML='<div class="loading-state">Searching your music…</div>';searchTimer=setTimeout(()=>searchRemote(query),250)}else{remoteMode=false;tracks=demos.slice();render()}});
 $("#searchInput").addEventListener("keydown",e=>{if(e.key==="Enter"){if(query.length>=2)searchRemote(query);$("#tracksSection").scrollIntoView({behavior:"smooth"})}if(e.key==="Escape"){e.target.value="";query="";document.body.classList.remove("search-active");remoteMode=false;tracks=demos.slice();render()}});
@@ -197,7 +197,7 @@ $("#lyricsBtn")?.addEventListener("click",async()=>{
  }catch(e){lyricsData=[];lyricsContent.innerHTML='<div class="lyrics-empty"><span>♪</span><strong>Could not load lyrics</strong><small>Please try again in a moment.</small></div>'}
 });
 
-const themeSelect=$("#themeSelect");function setTheme(name){const allowed=["neon","light","studio","cyberpunk","glass","amoled","sunset"];const theme=allowed.includes(name)?name:"neon";document.body.dataset.theme=theme;if(themeSelect)themeSelect.value=theme;try{localStorage.setItem("vfx-theme",theme)}catch{}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==="light"?"#f3f5fb":theme==="amoled"?"#000000":theme==="cyberpunk"?"#050810":theme==="sunset"?"#160d1b":"#080a12"}if(themeSelect){let savedTheme="neon";try{savedTheme=localStorage.getItem("vfx-theme-v2")||"glass"}catch{}setTheme(savedTheme);themeSelect.addEventListener("change",e=>{setTheme(e.target.value);try{localStorage.setItem("vfx-theme-v2",e.target.value)}catch{}toast("Theme changed · "+e.target.options[e.target.selectedIndex].text)})}else setTheme("glass");$("#backBtn").addEventListener("click",()=>window.history.back());$("#forwardBtn").addEventListener("click",()=>window.history.forward());$("#year").textContent=new Date().getFullYear();render();searchRemote(["Arijit Singh romantic hits","Anupam Roy Bengali songs","trending Hindi songs","Bengali hit songs"][Math.floor(Math.random()*4)],{title:"Your Daily Mix",silent:true});
+const themeSelect=$("#themeSelect");function setTheme(name){const allowed=["neon","light","studio","cyberpunk","glass","amoled","sunset"];const theme=allowed.includes(name)?name:"neon";document.body.dataset.theme=theme;if(themeSelect)themeSelect.value=theme;try{localStorage.setItem("vfx-theme",theme)}catch{}const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==="light"?"#f3f5fb":theme==="amoled"?"#000000":theme==="cyberpunk"?"#050810":theme==="sunset"?"#160d1b":"#080a12"}if(themeSelect){let savedTheme="neon";try{savedTheme=localStorage.getItem("vfx-theme-v2")||"glass"}catch{}setTheme(savedTheme);themeSelect.addEventListener("change",e=>{setTheme(e.target.value);try{localStorage.setItem("vfx-theme-v2",e.target.value)}catch{}toast("Theme changed · "+e.target.options[e.target.selectedIndex].text)})}else setTheme("glass");$("#backBtn").addEventListener("click",()=>window.history.back());$("#forwardBtn").addEventListener("click",()=>window.history.forward());$("#year").textContent=new Date().getFullYear();render();searchRemote(["Arijit Singh romantic hits","Anupam Roy Bengali songs","trending Hindi songs","Bengali hit songs"][Math.floor(Math.random()*4)],{title:"Your Daily Mix",silent:true}).then(restorePlayback);
 
 /* Tactile feedback helpers and playback state */
 document.body.addEventListener("pointerdown",e=>{
