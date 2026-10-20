@@ -15,7 +15,36 @@ async function api(req,res,url){if(req.method==="OPTIONS"){res.writeHead(204,{"A
 if(url.pathname==="/api/health")return send(res,200,{ok:true,provider:"user JioSaavn API",base:MUSIC_API,features:["search","song details and stream URL","cover metadata","local playlists in browser"]});
 if(url.pathname==="/api/search"){const q=(url.searchParams.get("q")||"").trim();if(q.length<2)return send(res,200,{results:[]});const page=Math.max(0,Number(url.searchParams.get("page"))||0),limit=Math.min(40,Math.max(1,Number(url.searchParams.get("limit"))||20));const raw=await musicApi("/search/songs?query="+encodeURIComponent(q)+"&page="+page+"&limit="+limit);const results=listFrom(raw).map(normalize).filter(t=>t.id&&t.title);return send(res,200,{results,provider:"user JioSaavn API"})}
 if(url.pathname==="/api/song"){const id=(url.searchParams.get("id")||"").trim();if(!id)return send(res,400,{error:"Song id is required"});const raw=await musicApi("/songs/"+encodeURIComponent(id));const d=unwrap(raw);const song=Array.isArray(d)?d[0]:(d.song||d.songs?.[0]||d);const result=normalize(song||{});if(!result.id)result.id=id;return send(res,200,{song:result,provider:"user JioSaavn API"})}
-if(url.pathname==="/api/lyrics"){const title=(url.searchParams.get("title")||"").trim(),artist=(url.searchParams.get("artist")||"").trim(),duration=Math.max(0,Number(url.searchParams.get("duration"))||0);if(!title)return send(res,400,{error:"Song title is required"});const headers={"Accept":"application/json","User-Agent":"VFX-MUSIC-VAULT/1.1 (music web app)"};let d=null;try{const endpoint="https://lrclib.net/api/get?track_name="+encodeURIComponent(title)+"&artist_name="+encodeURIComponent(artist)+"&duration="+Math.round(duration);const r=await fetch(endpoint,{headers});if(r.ok)d=await r.json()}catch{}if(!d||(!d.plainLyrics&&!d.syncedLyrics)){try{const q=encodeURIComponent((title+" "+artist).trim());const r=await fetch("https://lrclib.net/api/search?q="+q,{headers});if(r.ok){const items=await r.json();if(Array.isArray(items)&&items.length){const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();const wanted=norm(title),who=norm(artist);const score=x=>(norm(x.trackName)===wanted?5:norm(x.trackName).includes(wanted)||wanted.includes(norm(x.trackName))?2:0)+(who&&norm(x.artistName).includes(who)?3:0)+(duration&&x.duration&&Math.abs(Number(x.duration)-duration)<8?2:0)+(x.syncedLyrics?1:0);d=items.slice().sort((a,b)=>score(b)-score(a))[0]||null}}}catch{}}if(!d||(!d.plainLyrics&&!d.syncedLyrics))return send(res,200,{found:false,lyrics:"",syncedLyrics:"",message:"No matching lyrics found"});return send(res,200,{found:true,lyrics:d.plainLyrics||"",syncedLyrics:d.syncedLyrics||"",trackName:d.trackName||title,artistName:d.artistName||artist,source:"LRCLIB"})}
+if(url.pathname==="/api/lyrics"){
+ const title=(url.searchParams.get("title")||"").trim(),artist=(url.searchParams.get("artist")||"").trim(),duration=Math.max(0,Number(url.searchParams.get("duration"))||0);
+ if(!title)return send(res,400,{error:"Song title is required"});
+ const headers={"Accept":"application/json","User-Agent":"VFX-MUSIC-VAULT/1.2 (music web app)"};
+ // Prefer the supplied KnightBot lyrics endpoint; keep LRCLIB as a fallback.
+ try{
+  const query=(title+" "+artist).trim();
+  const endpoint="https://knightbotapi.stream/api/lyrics?apikey=knight&query="+encodeURIComponent(query);
+  const r=await fetch(endpoint,{headers,signal:AbortSignal.timeout(9000)});
+  if(r.ok){
+   const payload=await r.json(),item=payload?.result;
+   if(payload?.success&&item&&typeof item.lyrics==="string"&&item.lyrics.trim()){
+    return send(res,200,{found:true,lyrics:item.lyrics,syncedLyrics:"",trackName:String(item.title||title).replace(/&quot;/g,'"').replace(/&amp;/g,"&"),artistName:item.artist||artist,album:item.album||"",thumbnail:item.thumbnail||"",source:"KnightBot"})
+   }
+  }
+ }catch{}
+ let d=null;
+ try{
+  const endpoint="https://lrclib.net/api/get?track_name="+encodeURIComponent(title)+"&artist_name="+encodeURIComponent(artist)+"&duration="+Math.round(duration);
+  const r=await fetch(endpoint,{headers,signal:AbortSignal.timeout(7000)});if(r.ok)d=await r.json()
+ }catch{}
+ if(!d||(!d.plainLyrics&&!d.syncedLyrics)){
+  try{
+   const q=encodeURIComponent((title+" "+artist).trim()),r=await fetch("https://lrclib.net/api/search?q="+q,{headers,signal:AbortSignal.timeout(7000)});
+   if(r.ok){const items=await r.json();if(Array.isArray(items)&&items.length){const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(),wanted=norm(title),who=norm(artist),score=x=>(norm(x.trackName)===wanted?5:norm(x.trackName).includes(wanted)||wanted.includes(norm(x.trackName))?2:0)+(who&&norm(x.artistName).includes(who)?3:0)+(duration&&x.duration&&Math.abs(Number(x.duration)-duration)<8?2:0)+(x.syncedLyrics?1:0);d=items.slice().sort((a,b)=>score(b)-score(a))[0]||null}}
+  }catch{}
+ }
+ if(!d||(!d.plainLyrics&&!d.syncedLyrics))return send(res,200,{found:false,lyrics:"",syncedLyrics:"",message:"No matching lyrics found"});
+ return send(res,200,{found:true,lyrics:d.plainLyrics||"",syncedLyrics:d.syncedLyrics||"",trackName:d.trackName||title,artistName:d.artistName||artist,source:"LRCLIB"})
+}
 if(url.pathname==="/api/playlist")return send(res,501,{error:"This API base has no verified playlist endpoint configured. The app's own saved playlist works locally in your browser."});
 return send(res,404,{error:"API route not found"})
 }catch(e){return send(res,502,{error:"Music API request failed",detail:String(e.message||e)})}}
